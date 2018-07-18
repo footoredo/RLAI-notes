@@ -83,5 +83,41 @@ $$
 - The second condition guarantees that eventually the steps become small enough to assure convergence. 
 
 1. In sample average method, $\alpha_n(a)=\frac{1}{n}$ is bound to converge.
-2. Constant $\alpha_n(a)=\alpha$ may not converge, but can respond to changes in nonstationary setup well. *Nonstationary problems are common in RL.*
+2. Constant $\alpha_n(a)=\alpha$ may not converge, but can respond to changes in non-stationary setup well. *Non-stationary problems are common in RL.*
 
+### 2.6 Optimistic Initial Values
+
+#### Initial Bias
+
+*Initial bias*: The dependence of $Q_1(a)$
+
+Choosing optimistic(high) initial values encourages exploration. All actions will be tried several times before converge.
+
+This trick is effective on stationary problems but far from being a generally useful approach to encouraging exploration.
+
+- In Non-stationary problems, its drive for exploration is temporary.
+
+### 2.7 Upper-Confidence-Bound Action Selection
+
+$$
+A_t(a)\doteq\mathop{\arg\max}_a\left[Q_t(a)+c\sqrt{\frac{\ln t}{N_t(a)}}\right]
+$$
+
+$Q_t(a)+c\sqrt{\frac{\ln t}{N_t(a)}}$ is the upper-bound of $q_*(a)$ with confidence level $c$. This method takes uncertainty into consideration.
+
+The requirement of storing $N_t(a)$ makes it impractical in large action space problems.
+
+### 2.8 Gradient Bandit Algorithms
+
+Another approach instead of $Q_t(a)$: learning a numerical *preference* function $H_t(a)$ overtime to determine the probability of choosing the action, according to *soft-max distribution*.
+$$
+\Pr\{A_t=a\}\doteq\frac{e^{H_t(a)}}{\sum_{b=1}^ke^{H_t(b)}}\doteq\pi_t(a)
+$$
+$H_t(a)$ can be updated using stochastic gradient ascent:
+$$
+\begin{aligned}
+H_{t+1}(A_t)&\doteq H_t(A_t)+\alpha(R_t-\bar{R}_t)(1-\pi_t(A_t)), &&\text{and}\\
+H_{t+1}(a)&\doteq H_t(a)-\alpha(R_t-\bar{R}_t)\pi_t(a), &&\text{for all }a\neq A_t
+\end{aligned}
+$$
+$\bar{R}_t(a)$ is the average of all the rewards up through and including time $t$. It serves as the baseline of rewards. If current reward exceeds the baseline, the preference increases.
