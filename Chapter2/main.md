@@ -121,3 +121,50 @@ H_{t+1}(a)&\doteq H_t(a)-\alpha(R_t-\bar{R}_t)\pi_t(a), &&\text{for all }a\neq A
 \end{aligned}
 $$
 $\bar{R}_t(a)$ is the average of all the rewards up through and including time $t$. It serves as the baseline of rewards. If current reward exceeds the baseline, the preference increases.
+
+#### How to compute the gradient
+
+We want to have 
+$$
+H_{t+1}(a)\doteq H_{t}(a)+\alpha\frac{\partial\mathbb{E}[R_t]}{\partial H_t(a)}
+$$
+Where
+$$
+\mathbb{E}[R_t]=\sum_x\pi_t(x)q_*(x)
+$$
+Of course, it is not possible to implement gradient ascent exactly in our case because by assumption we do not know the $q_*(x)$, but in fact the updates of our algorithm are equal to the equation above in **expected value**, making the algorithm an instance of *stochastic gradient ascent*. 
+$$
+\begin{aligned}
+\frac{\partial\mathbb{E}[R_t]}{\partial H_t(a)}&=\frac{\partial}{\partial H_t(a)}\left(\sum_x\pi_t(x)q_*(x)\right)&\\
+&=\sum_xq_*(x)\frac{\partial\pi_t(x)}{\partial H_t(a)}&\\
+&=\sum_x\left(q_*(x)-B_t\right)\frac{\partial\pi_t(x)}{\partial H_t(a)}&\Leftarrow\sum_x\frac{\partial\pi_t(x)}{\partial H_t(a)}=0\\
+\end{aligned}
+$$
+$B_t$ is the *baseline* mentioned above, in this case it is $\bar{R}_t$. We can now proceed and turn this equation into an expectation.
+$$
+\begin{aligned}
+\frac{\partial\mathbb{E}[R_t]}{\partial H_t(a)}&=\sum_x\left(q_*(x)-B_t\right)\pi_t(x)\frac{\partial\pi_t(x)}{\partial H_t(a)}/\pi_t(x)&&\\
+&=\mathbb{E}[(q_*(A_t)-B_t)\frac{\partial\pi_t(A_t)}{\partial H_t(a)}/\pi_t(A_t)]&&\Leftarrow A_t\leftarrow x\\
+&=\mathbb{E}[(R_t-\bar{R}_t)\frac{\partial\pi_t(A_t)}{\partial H_t(a)}/\pi_t(A_t)]&&\Leftarrow \mathbb{E}[R_t| A_t]=q_*(A_t)
+\end{aligned}
+$$
+Now we take a look at the $\frac{\partial\pi_t(A_t)}{\partial H_t(a)}$.
+$$
+\begin{aligned}
+\frac{\partial\pi_t(A_t)}{\partial H_t(a)}&=\frac{\partial}{\partial H_t(a)}\left(\frac{e^{H_t(A_t)}}{\sum_be^{H_t(b)}}\right)\\
+&=\left\{
+\begin{array}{ll}
+-\pi_t(A_t)\pi_t(a),&A_t\neq a\\
+\pi_t(A_t)-\pi_t(A_t)\pi_t(a),&A_t=a
+\end{array}
+\right.\\
+&=\pi_t(A_t)(\mathbb{1}_{A_t=a}-\pi_t(a))
+\end{aligned}
+$$
+Finally
+$$
+\begin{aligned}
+\frac{\partial\mathbb{E}[R_t]}{\partial H_t(a)}&=\mathbb{E}[(R_t-\bar{R}_t)\pi_t(A_t)(\mathbb{1}_{A_t=a}-\pi_t(a))/\pi_t(A_t)]\\
+&=\mathbb{E}[(R_t-\bar{R}_t)(\mathbb{1}_{A_t=a}-\pi_t(a))]
+\end{aligned}
+$$
