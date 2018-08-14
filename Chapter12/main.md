@@ -55,3 +55,18 @@ $$
 G_{t:h}^\lambda\doteq(1-\lambda)\sum_{n=1}^{h-t-1}\lambda^{n-1}G_{t:t+n}+\lambda^{h-t-1}G_t
 $$
 
+- TTD($\lambda$)
+  $$
+  \mathbf{w}_{t+n}\doteq\mathbf{w}_{t+n-1}+\alpha[G_{t:t+n}^\lambda-\hat{v}(S_t,\mathbf{w}_{t+n-1})]\nabla\hat{v}(S_t,\mathbf{w}_{t+n-1})
+  $$
+
+- Efficient implementation
+
+$$
+G_{t:t+k}^\lambda=\hat{v}(S_t,\mathbf{w}_{t-1})+\sum_{i=t}^{t+k-1}(\gamma\lambda)^{i-t}\delta'_i
+$$
+
+Where
+$$
+\delta'_t\doteq R_{t+1}+\gamma\hat{}
+$$
