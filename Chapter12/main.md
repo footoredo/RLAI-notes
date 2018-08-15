@@ -19,3 +19,4 @@ $$
   \mathbf{w}_{t+1}\doteq\mathbf{w}_t+\alpha[G_t^\lambda-\hat{v}(S_t,\mathbf{w}_t)]\nabla\hat{v}(S_t,\mathbf{w}_t)
   $$
   
+
